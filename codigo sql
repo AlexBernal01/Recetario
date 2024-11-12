@@ -1,0 +1,73 @@
+-- Creación de la base de datos
+CREATE DATABASE IF NOT EXISTS base_recetas;
+USE base_recetas;
+
+-- Tabla de Recetas
+CREATE TABLE recetas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    descripcion TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Categorías
+CREATE TABLE categorias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+-- Tabla de Relación entre Recetas y Categorías (muchos-a-muchos)
+CREATE TABLE recetas_categorias (
+    receta_id INT,
+    categoria_id INT,
+    PRIMARY KEY (receta_id, categoria_id),
+    FOREIGN KEY (receta_id) REFERENCES recetas(id) ON DELETE CASCADE,
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id) ON DELETE CASCADE
+);
+
+-- Tabla de Ingredientes
+CREATE TABLE ingredientes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL
+);
+
+-- Tabla de Relación entre Recetas e Ingredientes (muchos-a-muchos)
+CREATE TABLE recetas_ingredientes (
+    receta_id INT,
+    ingrediente_id INT,
+    cantidad VARCHAR(50),
+    PRIMARY KEY (receta_id, ingrediente_id),
+    FOREIGN KEY (receta_id) REFERENCES recetas(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingrediente_id) REFERENCES ingredientes(id) ON DELETE CASCADE
+);
+
+-- Tabla de Usuarios
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+    contrasena VARCHAR(255) NOT NULL,
+    correo VARCHAR(255) NOT NULL UNIQUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla de Comentarios
+CREATE TABLE comentarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    receta_id INT,
+    usuario_id INT,
+    comentario TEXT NOT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (receta_id) REFERENCES recetas(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabla de Valoraciones
+CREATE TABLE valoraciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    receta_id INT,
+    usuario_id INT,
+    valoracion INT CHECK (valoracion >= 1 AND valoracion <= 5),
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (receta_id) REFERENCES recetas(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+);
